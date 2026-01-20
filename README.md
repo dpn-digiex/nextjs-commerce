@@ -1,75 +1,257 @@
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fcommerce&project-name=commerce&repo-name=commerce&demo-title=Next.js%20Commerce&demo-url=https%3A%2F%2Fdemo.vercel.store&demo-image=https%3A%2F%2Fbigcommerce-demo-asset-ksvtgfvnd.vercel.app%2Fbigcommerce.png&env=COMPANY_NAME,SHOPIFY_REVALIDATION_SECRET,SHOPIFY_STORE_DOMAIN,SHOPIFY_STOREFRONT_ACCESS_TOKEN,SITE_NAME)
+# E-commerce Client (Next.js)
 
-# Next.js Commerce
+This is the **client-side application** for an **order / pre-order e-commerce platform** focused on handmade and collectible products.  
+The app is built with **Next.js App Router** and supports **guest checkout**, **authenticated users**, and **admin analytics**.
 
-A high-performance, server-rendered Next.js App Router ecommerce application.
+---
 
-This template uses React Server Components, Server Actions, `Suspense`, `useOptimistic`, and more.
+## 1. Tech Stack
 
-<h3 id="v1-note"></h3>
+### Core
 
-> Note: Looking for Next.js Commerce v1? View the [code](https://github.com/vercel/commerce/tree/v1), [demo](https://commerce-v1.vercel.store), and [release notes](https://github.com/vercel/commerce/releases/tag/v1).
+- **Next.js 16** (App Router)
+- **React 19**
+- **TypeScript**
 
-## Providers
+### UI & Styling
 
-Vercel will only be actively maintaining a Shopify version [as outlined in our vision and strategy for Next.js Commerce](https://github.com/vercel/commerce/pull/966).
+- **shadcn/ui** – component library
+- **Tailwind CSS**
+- **next/font** (Geist)
 
-Vercel is happy to partner and work with any commerce provider to help them get a similar template up and running and listed below. Alternative providers should be able to fork this repository and swap out the `lib/shopify` file with their own implementation while leaving the rest of the template mostly unchanged.
+### Authentication & Authorization
 
-- Shopify (this repository)
-- [BigCommerce](https://github.com/bigcommerce/nextjs-commerce) ([Demo](https://next-commerce-v2.vercel.app/))
-- [Ecwid by Lightspeed](https://github.com/Ecwid/ecwid-nextjs-commerce/) ([Demo](https://ecwid-nextjs-commerce.vercel.app/))
-- [Geins](https://github.com/geins-io/vercel-nextjs-commerce) ([Demo](https://geins-nextjs-commerce-starter.vercel.app/))
-- [Medusa](https://github.com/medusajs/vercel-commerce) ([Demo](https://medusa-nextjs-commerce.vercel.app/))
-- [Prodigy Commerce](https://github.com/prodigycommerce/nextjs-commerce) ([Demo](https://prodigy-nextjs-commerce.vercel.app/))
-- [Saleor](https://github.com/saleor/nextjs-commerce) ([Demo](https://saleor-commerce.vercel.app/))
-- [Shopware](https://github.com/shopwareLabs/vercel-commerce) ([Demo](https://shopware-vercel-commerce-react.vercel.app/))
-- [Swell](https://github.com/swellstores/verswell-commerce) ([Demo](https://verswell-commerce.vercel.app/))
-- [Umbraco](https://github.com/umbraco/Umbraco.VercelCommerce.Demo) ([Demo](https://vercel-commerce-demo.umbraco.com/))
-- [Wix](https://github.com/wix/headless-templates/tree/main/nextjs/commerce) ([Demo](https://wix-nextjs-commerce.vercel.app/))
-- [Fourthwall](https://github.com/FourthwallHQ/vercel-commerce) ([Demo](https://vercel-storefront.fourthwall.app/))
+- **NextAuth.js**
+  - Credentials / OAuth providers
+  - Role-based access (`GUEST | USER | ADMIN`)
+- Middleware-based route protection
 
-> Note: Providers, if you are looking to use similar products for your demo, you can [download these assets](https://drive.google.com/file/d/1q_bKerjrwZgHwCw0ovfUMW6He9VtepO_/view?usp=sharing).
+### Data & State
 
-## Integrations
+- **React Server Components (RSC)**
+- **Server Actions**
+- **Fetch / Axios** for API communication
+- **Zustand** – client-side global state
+- **TanStack Query** – client cache & async state
 
-Integrations enable upgraded or additional functionality for Next.js Commerce
+### Other
 
-- [Orama](https://github.com/oramasearch/nextjs-commerce) ([Demo](https://vercel-commerce.oramasearch.com/))
+- ESLint + Prettier
+- Environment-based configuration
+- SEO-friendly routing
+- Image optimization (`next/image`)
 
-  - Upgrades search to include typeahead with dynamic re-rendering, vector-based similarity search, and JS-based configuration.
-  - Search runs entirely in the browser for smaller catalogs or on a CDN for larger.
+---
 
-- [React Bricks](https://github.com/ReactBricks/nextjs-commerce-rb) ([Demo](https://nextjs-commerce.reactbricks.com/))
-  - Edit pages, product details, and footer content visually using [React Bricks](https://www.reactbricks.com) visual headless CMS.
+## 2. Application Roles
 
-## Running locally
+### I. GUEST
 
-You will need to use the environment variables [defined in `.env.example`](.env.example) to run Next.js Commerce. It's recommended you use [Vercel Environment Variables](https://vercel.com/docs/concepts/projects/environment-variables) for this, but a `.env` file is all that is necessary.
+- Default role (no login required)
+- Browse products & campaigns
+- Add to cart
+- Checkout and upload payment receipt
+- Track orders by order code
 
-> Note: You should not commit your `.env` file or it will expose secrets that will allow others to control your Shopify store.
+### II. USER (Customer)
 
-1. Install Vercel CLI: `npm i -g vercel`
-2. Link local instance with Vercel and GitHub accounts (creates `.vercel` directory): `vercel link`
-3. Download your environment variables: `vercel env pull`
+- Authenticated customer
+- Access user profile
+- View order history and order details
 
-```bash
-pnpm install
-pnpm dev
+### III. ADMIN (Owner)
+
+- Authenticated user with `owner` role
+- Access admin dashboard & analytics
+
+---
+
+## 3. Routing Structure (App Router)
+
+```
+client/
+├── app/                          # Next.js App Router
+│   ├── (store)/                  # Public storefront (GUEST)
+│   │   ├── layout.tsx
+│   │   ├── page.tsx              # Homepage (RSC)
+│   │   ├── products/
+│   │   │   ├── page.tsx          # Product list (RSC)
+│   │   │   └── [slug]/page.tsx   # Product detail (RSC)
+│   │   ├── cart/page.tsx         # Cart page (Client)
+│   │   ├── checkout/page.tsx     # Checkout flow (Client)
+│   │   ├── campaigns/[slug]/page.tsx
+│   │   └── order/track/page.tsx
+│   │
+│   ├── (auth)/                   # Authentication
+│   │   ├── login/page.tsx
+│   │   └── register/page.tsx
+│   │
+│   ├── (user)/                   # USER only
+│   │   ├── layout.tsx
+│   │   ├── profile/page.tsx
+│   │   ├── orders/page.tsx
+│   │   └── orders/[orderId]/page.tsx
+│   │
+│   ├── (admin)/                  # ADMIN only
+│   │   ├── layout.tsx
+│   │   ├── dashboard/page.tsx
+│   │   └── analytics/page.tsx
+│   │
+│   ├── api/                      # Route Handlers
+│   │   ├── auth/[...nextauth]/route.ts
+│   │   └── uploads/route.ts
+│   │
+│   ├── layout.tsx                # Root layout (Providers)
+│   ├── globals.css
+│   ├── not-found.tsx
+│   └── middleware.ts
+│
+├── stores/                       # GLOBAL CLIENT STATE (Zustand)
+│   ├── cart.store.ts             # Cart items, quantity, total
+│   ├── checkout.store.ts         # Shipping, payment, step state
+│   └── auth.store.ts             # Client session / user snapshot
+│
+├── components/                   # Shared UI components (CLIENT)
+│   ├── ui/                       # shadcn/ui
+│   ├── layout/                   # Header, Footer, Sidebar
+│   │   └── Header.tsx            # uses cart.store
+│   ├── cart/
+│   │   ├── CartItem.tsx
+│   │   └── CartSummary.tsx
+│   ├── product/
+│   └── order/
+│
+├── features/                     # BUSINESS LOGIC (SERVER + CLIENT)
+│   ├── auth/
+│   │   ├── auth.service.ts       # server auth logic
+│   │   ├── auth.types.ts
+│   │   └── auth.guard.ts
+│   │
+│   ├── product/
+│   │   ├── product.api.ts        # fetch products (server)
+│   │   ├── product.types.ts
+│   │   └── product.utils.ts
+│   │
+│   ├── order/
+│   │   ├── order.api.ts          # create / fetch orders (server)
+│   │   ├── order.types.ts
+│   │   └── order.constants.ts
+│   │
+│   ├── checkout/
+│   │   ├── checkout.action.ts    # server actions
+│   │   └── checkout.validator.ts
+│   │
+│   ├── campaign/
+│   └── promotion/
+│
+├── hooks/                        # STORE WRAPPERS / COMPOSABLE HOOKS
+│   ├── useCart.ts                # wraps cart.store
+│   ├── useCheckout.ts            # wraps checkout.store
+│   ├── useAuth.ts                # sync NextAuth + auth.store
+│   └── useOrder.ts
+│
+├── lib/                          # CORE UTILITIES
+│   ├── auth.ts                   # requireAuth / requireAdmin
+│   ├── fetcher.ts                # API wrapper
+│   ├── constants.ts
+│   └── utils.ts
+│
+├── types/                        # GLOBAL SHARED TYPES
+│   ├── user.ts
+│   ├── order.ts
+│   ├── product.ts
+│   └── next-auth.d.ts
+│
+├── styles/
+│   └── tailwind.css
+│
+├── public/
+│   └── images/
+│
+└── middleware.ts                 # Role & auth protection
 ```
 
-Your app should now be running on [localhost:3000](http://localhost:3000/).
+---
 
-<details>
-  <summary>Expand if you work at Vercel and want to run locally and / or contribute</summary>
+## 4. State Management Strategy
 
-1. Run `vc link`.
-1. Select the `Vercel Solutions` scope.
-1. Connect to the existing `commerce-shopify` project.
-1. Run `vc env pull` to get environment variables.
-1. Run `pnpm dev` to ensure everything is working correctly.
-</details>
+### Server State (RSC)
 
-## Vercel, Next.js Commerce, and Shopify Integration Guide
+Handled by **Server Components & Server Actions**:
 
-You can use this comprehensive [integration guide](https://vercel.com/docs/integrations/ecommerce/shopify) with step-by-step instructions on how to configure Shopify as a headless CMS using Next.js Commerce as your headless Shopify storefront on Vercel.
+- Product list / product detail
+- Campaigns
+- Order detail
+- Admin analytics data
+
+✅ Benefits:
+- SEO friendly
+- Automatic caching
+- Smaller JS bundle
+
+---
+
+### Client State (Zustand)
+
+Handled by **Zustand store** for **cross-page & long-lived UI state**.
+
+#### Used for:
+
+- 🛒 Cart
+- 👤 Client auth/session state
+- 🧾 Checkout flow state
+- 🎛 UI preferences
+
+> **Rule of thumb:**  
+> If the state is **interactive, client-only, and shared across pages → Zustand**
+
+---
+
+## 5. Setup Instructions
+
+### Install Dependencies
+
+```bash
+npm install
+```
+
+### Environment Variables
+
+Create a `.env.local` file:
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:3001
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your-secret-key-here
+```
+
+### Run Development Server
+
+```bash
+npm run dev
+```
+
+---
+
+## 6. Next Steps
+
+1. **Install shadcn/ui components**: Run `npx shadcn@latest add button` etc.
+2. **Connect to backend API**: Update API endpoints in `features/*/api.ts` files
+3. **Implement file upload**: Configure storage (S3/R2/Cloudinary) in `app/api/uploads/route.ts`
+4. **Add UI components**: Build out cart, checkout, product pages with shadcn/ui
+5. **Add form validation**: Use React Hook Form + Zod for checkout forms
+6. **Implement search & filters**: Add product search and category filtering
+
+---
+
+## 7. Project Structure Notes
+
+- **Route Groups**: `(store)`, `(auth)`, `(user)`, `(admin)` organize routes without affecting URLs
+- **Server Components**: Default for data fetching (SEO, performance)
+- **Client Components**: Use `"use client"` for interactivity (cart, forms, etc.)
+- **Server Actions**: Use for mutations (create order, update cart)
+- **Middleware**: Protects routes based on authentication and roles
+
+---
+
+End of README.md

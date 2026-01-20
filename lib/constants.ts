@@ -1,51 +1,46 @@
-export type SortFilterItem = {
-  title: string;
-  slug: string | null;
-  sortKey: "RELEVANCE" | "BEST_SELLING" | "CREATED_AT" | "PRICE";
-  reverse: boolean;
-};
+// Application constants
 
-export const defaultSort: SortFilterItem = {
-  title: "Relevance",
-  slug: null,
-  sortKey: "RELEVANCE",
-  reverse: false,
-};
+export const APP_NAME = "Sticker Store";
 
-export const sorting: SortFilterItem[] = [
-  defaultSort,
-  {
-    title: "Trending",
-    slug: "trending-desc",
-    sortKey: "BEST_SELLING",
-    reverse: false,
-  }, // asc
-  {
-    title: "Latest arrivals",
-    slug: "latest-desc",
-    sortKey: "CREATED_AT",
-    reverse: true,
-  },
-  {
-    title: "Price: Low to high",
-    slug: "price-asc",
-    sortKey: "PRICE",
-    reverse: false,
-  }, // asc
-  {
-    title: "Price: High to low",
-    slug: "price-desc",
-    sortKey: "PRICE",
-    reverse: true,
-  },
-];
+// Database roles (stored in database)
+export const DB_ROLES = {
+  OWNER: "owner",
+  CUSTOMER: "customer",
+} as const;
 
-export const TAGS = {
-  collections: "collections",
-  products: "products",
-  cart: "cart",
-};
+// Application roles (used in frontend logic)
+export const ROLES = {
+  GUEST: "GUEST",
+  USER: "USER",
+  ADMIN: "ADMIN",
+} as const;
 
-export const HIDDEN_PRODUCT_TAG = "nextjs-frontend-hidden";
-export const DEFAULT_OPTION = "Default Title";
-export const SHOPIFY_GRAPHQL_API_ENDPOINT = "/api/2023-01/graphql.json";
+export const ORDER_STATUS = {
+  PENDING_PAYMENT: "pending_payment",
+  PROCESSING: "processing",
+  SHIPPED: "shipped",
+  DELIVERED: "delivered",
+  CANCELLED: "cancelled",
+} as const;
+
+export const PRODUCT_TYPE = {
+  IN_STOCK: "in_stock",
+  PREORDER: "preorder",
+} as const;
+
+export const CAMPAIGN_TYPE = {
+  PREORDER: "preorder",
+  FLASH_SALE: "flash_sale",
+  PROMOTION: "promotion",
+} as const;
+
+export const PAYMENT_PLAN = {
+  FULL: "full",
+  DEPOSIT: "deposit",
+} as const;
+
+export const PAYMENT_METHOD = {
+  BANK_TRANSFER: "bank_transfer",
+  MOMO: "momo",
+  ZALOPAY: "zalopay",
+} as const;
