@@ -1,4 +1,4 @@
-import { apiClient, fetcher } from "@/lib/fetcher";
+import { fetcher } from "@/lib/fetcher";
 import { ProductListParams, ProductListResponse, Product } from "./product.types";
 
 export const productApi = {
